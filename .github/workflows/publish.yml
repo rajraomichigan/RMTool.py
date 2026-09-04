@@ -1,0 +1,21 @@
+# Publishes to PyPI via "trusted publishing" whenever a GitHub release is created.
+# One-time setup: on pypi.org -> Your projects -> Publishing -> add a pending
+# publisher with owner=rajraomichigan, repo=rmtool, workflow=publish.yml, environment=pypi
+name: Publish to PyPI
+on:
+  release:
+    types: [published]
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
